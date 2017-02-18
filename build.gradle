@@ -2,6 +2,7 @@
 
 ext{
     DAGGER_VERSION="2.9"
+    FLICKR_API_VERSION="2.1.0"
 }
 buildscript {
     repositories {

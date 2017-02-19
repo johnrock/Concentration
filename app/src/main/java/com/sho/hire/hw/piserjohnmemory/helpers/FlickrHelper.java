@@ -23,6 +23,8 @@ import javax.inject.Singleton;
 @Singleton
 public class FlickrHelper implements  HttpHelper.ResponseListener{
 
+    public static final int MAX_PAGES_FOR_ENDPOINT = 10;
+
     public interface FlickrPhotoReceiver{
         void loadFlickrPhotoList(List<Photo> flickrPhotoList);
     }
@@ -83,8 +85,8 @@ public class FlickrHelper implements  HttpHelper.ResponseListener{
     }
 
 
-    public void getRecent(String... tags){
-        logHelper.debug(Constants.LOGTAG, "Requesting new images from Flickr...");
+    private void getRecent(String... tags){
+        logHelper.debug(Constants.LOGTAG, "Requesting new images from Flickr using the next page...");
         initPhotoList();
         httpHelper.get(this, makeEndpoint(FlickrMethod.RECENT, getCurrentPage(),  tags));
 
@@ -110,7 +112,7 @@ public class FlickrHelper implements  HttpHelper.ResponseListener{
     }
 
     private int getCurrentPage() {
-        if(currentPage==10){
+        if(currentPage == MAX_PAGES_FOR_ENDPOINT){
             currentPage = 0;
         }
         return currentPage++;

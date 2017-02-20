@@ -50,6 +50,7 @@ public class FlickrConcentrationCellProvider implements ConcentrationCellProvide
             for (FlickrPhoto flickrPhoto : flickrFlickrPhotoList) {
                 ConcentrationCell concentrationCell = new ConcentrationCell();
                 concentrationCell.setUrl(composeImageUrl(flickrPhoto));
+                concentrationCell.setId(flickrPhoto.getId());
                 concentrationCells.add(concentrationCell);
             }
             return concentrationCells;

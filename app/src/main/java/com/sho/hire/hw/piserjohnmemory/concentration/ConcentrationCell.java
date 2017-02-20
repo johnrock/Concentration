@@ -8,6 +8,14 @@ package com.sho.hire.hw.piserjohnmemory.concentration;
 public class ConcentrationCell {
 
     private String url;
+    private String id;
+
+    public ConcentrationCell duplicate() {
+        ConcentrationCell concentrationCell = new ConcentrationCell();
+        concentrationCell.setUrl(this.url);
+        concentrationCell.setId(this.id);
+        return concentrationCell;
+    }
 
     public String getUrl() {
         return url;
@@ -17,10 +25,13 @@ public class ConcentrationCell {
         this.url = url;
     }
 
-    @Override
-    public String toString() {
-        return "ConcentrationCell{" +
-                "url='" + url + '\'' +
-                '}';
+    public void setId(String id) {
+        this.id = id;
     }
+
+    public String getId() {
+        return id;
+    }
+
+    
 }

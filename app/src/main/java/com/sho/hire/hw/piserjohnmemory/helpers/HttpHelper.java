@@ -18,16 +18,15 @@ import javax.net.ssl.HttpsURLConnection;
 /**
  * @author John Piser johnpiser@yahoo.com
  *
- *  Helper class for making HTTP requests
- *  Must be called from a background thread
+ *  Helper class for making HTTP requests off of the UI thread
  */
 
 @Singleton
 public class HttpHelper {
 
-    interface ResponseListener{
-        void handleResponse(String url, String response);
-        void responseComplete(String url, String response);
+    public interface ResponseListener{
+        void handleResponseInBackground(String url, String response);
+        void handleResponseCompleteOnUiThread(String url, String response);
     }
 
     public static final String GET = "GET";
@@ -42,17 +41,19 @@ public class HttpHelper {
     public void get(final ResponseListener responseListener, final String url){
 
         if(responseListener == null || url == null || url.length() < 8){
+            logHelper.error(Constants.LOGTAG, "Error: Unable to make HTTP request with responseListener:["+responseListener+"] and url[" + url + "]");
             return;
         }
 
         AsyncTask<String, String, String> asyncTask = new AsyncTask<String, String, String>() {
             @Override
             protected String doInBackground(String... params) {
-                URL urlObj = null;
+                URL urlObj;
                 try {
                     urlObj = new URL(url);
                 } catch (MalformedURLException e) {
-                    e.printStackTrace();
+                    logHelper.error(Constants.LOGTAG, "Error: Unable to make HTTP request with MalformedUrl:["+url+"]");
+                    return null;
                 }
 
                 StringBuilder response = new StringBuilder();
@@ -61,7 +62,6 @@ public class HttpHelper {
                     HttpsURLConnection con = (HttpsURLConnection) urlObj.openConnection();
 
                     con.setRequestMethod(GET);
-
                     con.setDoOutput(true);
                     DataOutputStream dataOutputStream = new DataOutputStream(con.getOutputStream());
 
@@ -84,7 +84,7 @@ public class HttpHelper {
 
                 if(response != null){
                     //handle any JSON parsing in the same background thread
-                    responseListener.handleResponse(url, response.toString());
+                    responseListener.handleResponseInBackground(url, response.toString());
                 }
                 return response != null ? response.toString() : null;
             }
@@ -93,7 +93,7 @@ public class HttpHelper {
             protected void onPostExecute(String response) {
                 super.onPostExecute(response);
                 logHelper.debug(Constants.LOGTAG, " in onPostExecute with result: " + response);
-                responseListener.responseComplete(url, response);
+                responseListener.handleResponseCompleteOnUiThread(url, response);
 
             }
         }.execute();

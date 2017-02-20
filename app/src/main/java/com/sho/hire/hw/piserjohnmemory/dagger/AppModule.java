@@ -3,6 +3,9 @@ package com.sho.hire.hw.piserjohnmemory.dagger;
 import android.app.Application;
 
 import com.sho.hire.hw.piserjohnmemory.BuildConfig;
+import com.sho.hire.hw.piserjohnmemory.concentration.ConcentrationCellProvider;
+import com.sho.hire.hw.piserjohnmemory.flickr.FlickrConcentrationCellProvider;
+import com.sho.hire.hw.piserjohnmemory.flickr.FlickrHelper;
 import com.sho.hire.hw.piserjohnmemory.helpers.LogHelper;
 
 import javax.inject.Singleton;
@@ -40,5 +43,11 @@ public class AppModule {
     @Singleton
     LogHelper providesLogHelper(){
         return logHelper;
+    }
+
+    @Provides
+    @Singleton
+    ConcentrationCellProvider providesConcentrationCellProvider(FlickrHelper flickrHelper){
+        return new FlickrConcentrationCellProvider(flickrHelper);
     }
 }

@@ -3,7 +3,7 @@ package com.sho.hire.hw.piserjohnmemory.flickr;
 /**
  * @author John Piser johnpiser@yahoo.com
  *
- * Model of a Photo provided by flickr api
+ * Model of a FlickrPhoto provided by flickr api
  *
  * "photo": [
  * {
@@ -19,7 +19,7 @@ package com.sho.hire.hw.piserjohnmemory.flickr;
  * },
  */
 
-public class Photo {
+public class FlickrPhoto {
 
     private String id;
     private String owner;
@@ -106,7 +106,7 @@ public class Photo {
 
     @Override
     public String toString() {
-        return "Photo{" +
+        return "FlickrPhoto{" +
                 "id='" + id + '\'' +
                 ", server='" + server + '\'' +
                 ", title='" + title + '\'' +

@@ -36,7 +36,7 @@ public class FlickrConcentrationCellProvider implements ConcentrationCellProvide
     @Override
     public void getConcentrationCells(ConcentrationCellReceiver concentrationCellReceiver, int page, int batchSize, String[] tags) {
         this.concentrationCellReceiver = concentrationCellReceiver;
-        flickrHelper.getRecentPhotos(this, page, batchSize, tags);
+        flickrHelper.getPhotosByTags(this, page, batchSize, tags);
     }
 
     @Override

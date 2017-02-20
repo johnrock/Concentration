@@ -5,7 +5,8 @@ package com.sho.hire.hw.piserjohnmemory.flickr;
  */
 
 public enum FlickrMethod {
-    RECENT ("flickr.photos.getRecent"),
+    SEARCH("flickr.photos.search"),
+    RECENT("flickr.photos.getRecent"),
     SIZES  ("flickr.photos.getSizes");
 
     private String value;

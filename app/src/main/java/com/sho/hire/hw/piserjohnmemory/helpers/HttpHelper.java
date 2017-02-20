@@ -33,11 +33,6 @@ public class HttpHelper {
 
     LogHelper logHelper;
 
-    @Inject
-    public HttpHelper(LogHelper logHelper) {
-        this.logHelper = logHelper;
-    }
-
     public void get(final ResponseListener responseListener, final String url){
 
         if(responseListener == null || url == null || url.length() < 8){
@@ -101,5 +96,10 @@ public class HttpHelper {
 
 
 
+    }
+
+    @Inject
+    public HttpHelper(LogHelper logHelper) {
+        this.logHelper = logHelper;
     }
 }

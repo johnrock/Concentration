@@ -30,10 +30,11 @@ public class ImageDownloadTask extends AsyncTask<String, Void, String> {
 
         logHelper.debug(Constants.LOGTAG, "[ImageDownloadTask] Downloading bitmap images in background thread ....");
 
+        int count = 1;
         if(concentrationCells != null){
             for (ConcentrationCell concentrationCell : concentrationCells) {
                 Bitmap bitmap = null;
-
+                logHelper.debug(Constants.LOGTAG, "...loading bitmap: " + count++);
                 try {
                     InputStream in = new java.net.URL(concentrationCell.getUrl()).openStream();
                     bitmap = BitmapFactory.decodeStream(in);
@@ -48,6 +49,6 @@ public class ImageDownloadTask extends AsyncTask<String, Void, String> {
     }
 
     protected void onPostExecute(String result) {
-        this.concentrationCellReceiver.displayConcentrationCells();
+        this.concentrationCellReceiver.displayConcentrationCells(concentrationCells);
     }
 }

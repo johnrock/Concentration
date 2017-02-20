@@ -3,6 +3,7 @@ package com.sho.hire.hw.piserjohnmemory.activities;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ProgressBar;
 
@@ -30,6 +31,7 @@ public class MainActivity extends AppCompatActivity implements ConcentrationGame
 
     GridView gridView;
     ProgressBar progressBar;
+    Button buttonNewGame;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,14 +41,16 @@ public class MainActivity extends AppCompatActivity implements ConcentrationGame
         //In a production app Butterknife library would be used for all view binding.
         gridView = (GridView) findViewById(R.id.gridview);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        buttonNewGame = (Button) findViewById(R.id.buttonNewGame);
 
         //Dagger dependency injection
         ((ConcentrationApplication)getApplication()).getAppComponent().inject(this);
 
-        startGame();
+        startGame(null);
     }
 
-    private void startGame() {
+    public void startGame(View view) {
+        toggleLoading(true);
         concentrationGame.init(this, THEME_KITTEN);
     }
 
@@ -63,9 +67,13 @@ public class MainActivity extends AppCompatActivity implements ConcentrationGame
     private void toggleLoading(boolean loading) {
         if(loading){
             progressBar.setVisibility(View.VISIBLE);
+            buttonNewGame.setVisibility(View.GONE);
+            gridView.setVisibility(View.INVISIBLE);
         }
         else{
             progressBar.setVisibility(View.GONE);
+            buttonNewGame.setVisibility(View.VISIBLE);
+            gridView.setVisibility(View.VISIBLE);
         }
     }
 }

@@ -42,6 +42,7 @@ public class ConcentrationGame implements ConcentrationCellReceiver{
     public ConcentrationGame(LogHelper logHelper, ConcentrationCellProvider concentrationCellProvider) {
         this.logHelper = logHelper;
         this.concentrationCellProvider = concentrationCellProvider;
+        currentPage = 0;
     }
 
 
@@ -52,33 +53,57 @@ public class ConcentrationGame implements ConcentrationCellReceiver{
         }
         this.host = host;
         this.theme = theme;
-        currentPage = 0;
-        concentrationCellProvider.getConcentrationCells(this, currentPage++, BATCH_SIZE, theme);
 
+
+        //Only make the call to get more cells if the current batch has been extinguished
+        if(concentrationCells != null && concentrationCells.size() >= GRID_SIZE/2){
+            loadBitmaps(fetchNextCells());
+        }
+        else{
+            concentrationCellProvider.getConcentrationCells(this, currentPage++, BATCH_SIZE, theme);
+        }
     }
 
+    /**
+     * Callback to Receive a new batch of ConcentrationCells from the ConcentrationCellProvider
+     */
     @Override
     public void loadConcentrationCells(List<ConcentrationCell> concentrationCells) {
         this.concentrationCells = concentrationCells;
         logHelper.debug(Constants.LOGTAG, "[ConcentrationGame] Loading concentration cells: " + concentrationCells);
 
-        loadBitmaps(); //must be called before fetchNextCells
+        loadBitmaps(fetchNextCells()); //must be called before fetchNextCells
     }
 
     @Override
-    public void displayConcentrationCells() {
+    public void displayConcentrationCells(List<ConcentrationCell> gameCells) {
 
-        logHelper.debug(Constants.LOGTAG, "[ConcentrationGame] Displaying concentration cells on host");
-        host.displayConcentrationCells(fetchNextCells());
+        prepareGameCells(gameCells);
 
+        logHelper.debug(Constants.LOGTAG, "[ConcentrationGame] Displaying game concentration cells on host");
+        host.displayConcentrationCells(gameCells);
+    }
+
+    /**
+     * Final method before returning the game cells to the view:
+     * - duplicate each cell, add to the collection, and shuffle
+     */
+    private void prepareGameCells(List<ConcentrationCell> gameCells) {
+        List<ConcentrationCell> duplicates = new ArrayList<>();
+        for (ConcentrationCell gameCell : gameCells) {
+            duplicates.add(gameCell.duplicate());
+        }
+        gameCells.addAll(duplicates);
+        Collections.shuffle(gameCells);
     }
 
     /**
      * Download the images. Must be called each time a new batch of images is returned
+     * @param gameCells
      */
-    private void loadBitmaps() {
-        if(concentrationCells != null){
-            new ImageDownloadTask(this, logHelper, concentrationCells).execute();
+    private void loadBitmaps(List<ConcentrationCell> gameCells) {
+        if(this.concentrationCells != null){
+            new ImageDownloadTask(this, logHelper,gameCells).execute();
         }
     }
 
@@ -90,11 +115,8 @@ public class ConcentrationGame implements ConcentrationCellReceiver{
             for(int i =0; i<GRID_SIZE/2; i++){
                 ConcentrationCell concentrationCell = iter.next();
                 results.add(concentrationCell);
-                results.add(concentrationCell.duplicate());
                 iter.remove();
             }
-
-            Collections.shuffle(results);
 
             logHelper.debug(Constants.LOGTAG, "[ConcentrationGame] fetching concentration cells: " + results);
             return results;

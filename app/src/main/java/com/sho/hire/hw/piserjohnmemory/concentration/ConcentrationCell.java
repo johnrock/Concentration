@@ -11,7 +11,7 @@ public class ConcentrationCell {
 
     private String url;
     private String id;
-    private boolean showing;
+    private boolean showing = true;
     private Bitmap imageBitmap;
     private int defaultResourceId = ConcentrationGame.DEFAULT_GRID_ICON;
 

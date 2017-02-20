@@ -42,12 +42,12 @@ public class FlickrHelper implements HttpHelper.ResponseListener {
     }
 
 
-    public void getRecentPhotos(FlickrPhotoReceiver flickrPhotoReceiver, int page, int maxPerPage, String... tags){
+    public void getPhotosByTags(FlickrPhotoReceiver flickrPhotoReceiver, int page, int maxPerPage, String... tags){
         this.flickrPhotoReceiver = flickrPhotoReceiver;
         flickrPhotos = new ArrayList<>();
 
-        logHelper.debug(Constants.LOGTAG, "Requesting new images from Flickr using the next page...");
-        httpHelper.get(this, makeEndpoint(FlickrMethod.RECENT, page, maxPerPage, tags));
+        logHelper.debug(Constants.LOGTAG, "Requesting new images from Flickr using page " + page);
+        httpHelper.get(this, makeEndpoint(FlickrMethod.SEARCH, page, maxPerPage, tags));
     }
 
 
@@ -61,7 +61,7 @@ public class FlickrHelper implements HttpHelper.ResponseListener {
     @Override
     public void handleResponseInBackground(String url, String response) {
         if(url != null && response != null){
-            if(url.contains(FlickrMethod.RECENT.getValue())){
+            if(url.contains(FlickrMethod.SEARCH.getValue())){
 
                 logHelper.debug(Constants.LOGTAG, "Inside FlickrHelper handleResponseInBackground with: " + response);
                 JSONObject jsonObject = makeJsonObject(response);
@@ -110,7 +110,7 @@ public class FlickrHelper implements HttpHelper.ResponseListener {
     @Override
     public void handleResponseCompleteOnUiThread(String url, String response) {
 
-        if(url.contains(FlickrMethod.RECENT.getValue())){
+        if(url.contains(FlickrMethod.SEARCH.getValue())){
             if(flickrPhotoReceiver != null){
                 flickrPhotoReceiver.loadFlickrPhotos(flickrPhotos);
             }

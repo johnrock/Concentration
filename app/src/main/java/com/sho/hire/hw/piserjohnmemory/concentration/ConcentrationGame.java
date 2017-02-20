@@ -42,7 +42,7 @@ public class ConcentrationGame implements ConcentrationCellReceiver{
     public ConcentrationGame(LogHelper logHelper, ConcentrationCellProvider concentrationCellProvider) {
         this.logHelper = logHelper;
         this.concentrationCellProvider = concentrationCellProvider;
-        currentPage = 0;
+        currentPage = 1;
     }
 
 

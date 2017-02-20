@@ -1,7 +1,9 @@
 package com.sho.hire.hw.piserjohnmemory.concentration;
 
+import com.sho.hire.hw.piserjohnmemory.R;
 import com.sho.hire.hw.piserjohnmemory.helpers.LogHelper;
 import com.sho.hire.hw.piserjohnmemory.util.Constants;
+import com.sho.hire.hw.piserjohnmemory.util.ImageDownloadTask;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,6 +28,7 @@ public class ConcentrationGame implements ConcentrationCellReceiver{
 
     private static final int BATCH_SIZE = 80;
     private static final int GRID_SIZE = 16;
+    public static  final int DEFAULT_GRID_ICON = R.drawable.cat_icon;
 
     LogHelper logHelper;
     ConcentrationCellProvider concentrationCellProvider;
@@ -59,7 +62,24 @@ public class ConcentrationGame implements ConcentrationCellReceiver{
         this.concentrationCells = concentrationCells;
         logHelper.debug(Constants.LOGTAG, "[ConcentrationGame] Loading concentration cells: " + concentrationCells);
 
+        loadBitmaps(); //must be called before fetchNextCells
+    }
+
+    @Override
+    public void displayConcentrationCells() {
+
+        logHelper.debug(Constants.LOGTAG, "[ConcentrationGame] Displaying concentration cells on host");
         host.displayConcentrationCells(fetchNextCells());
+
+    }
+
+    /**
+     * Download the images. Must be called each time a new batch of images is returned
+     */
+    private void loadBitmaps() {
+        if(concentrationCells != null){
+            new ImageDownloadTask(this, logHelper, concentrationCells).execute();
+        }
     }
 
     private List<ConcentrationCell> fetchNextCells() {

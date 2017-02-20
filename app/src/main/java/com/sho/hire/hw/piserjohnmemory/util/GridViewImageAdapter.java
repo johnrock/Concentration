@@ -56,7 +56,14 @@ public class GridViewImageAdapter extends BaseAdapter{
             imageView = (ImageView) convertView;
         }
 
-        new ImageDownloadTask(imageView, logHelper).execute(((ConcentrationCell)getItem(position)).getUrl());
+        ConcentrationCell concentrationCell = (ConcentrationCell) getItem(position);
+
+        if(concentrationCell.isShowing()){
+            imageView.setImageBitmap(concentrationCell.getImageBitmap());
+        }
+        else{
+            imageView.setImageResource(concentrationCell.getDefaultResourceId());
+        }
 
         return imageView;
 

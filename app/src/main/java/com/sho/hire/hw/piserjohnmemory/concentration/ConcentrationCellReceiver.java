@@ -7,4 +7,5 @@ import java.util.List;
  */
 public interface ConcentrationCellReceiver {
     void loadConcentrationCells(List<ConcentrationCell> concentrationCells);
+    void displayConcentrationCells();
 }

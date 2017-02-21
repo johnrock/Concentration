@@ -138,7 +138,7 @@ public class ConcentrationGame implements ConcentrationCellReceiver{
      * @param gameCells
      */
     private void loadBitmaps(List<ConcentrationCell> gameCells) {
-        if(this.concentrationCells != null){
+        if(gameCells != null && !gameCells.isEmpty()){
             new ConcentrationImageDownloadTask(this, logHelper,gameCells).execute();
         }
     }

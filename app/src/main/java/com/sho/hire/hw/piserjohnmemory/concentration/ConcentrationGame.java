@@ -6,8 +6,8 @@ import com.sho.hire.hw.piserjohnmemory.util.Constants;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
+import java.util.Queue;
 
 import javax.inject.Inject;
 
@@ -26,14 +26,14 @@ public class ConcentrationGame implements ConcentrationCellReceiver{
     }
     public static final int MISMATCH_TIMEOUT = 1000;
     public static  final int DEFAULT_GRID_ICON = R.drawable.cat_icon;
-    private static final int BATCH_SIZE = 80;
+    public static final int BATCH_SIZE = 80;
     private static final int GRID_SIZE = 16;
 
     LogHelper logHelper;
     ConcentrationCellProvider concentrationCellProvider;
 
     private String[] theme;
-    private List<ConcentrationCell> concentrationCells; //Inventory of cells pre loaded from a ConcentrationCellProvider
+    private Queue<ConcentrationCell> concentrationCellQueue; //Inventory of cells pre loaded from a ConcentrationCellProvider
     private List<ConcentrationCell> gameCells;          //Cells in the current game
     private int currentPage;
     private Host host;
@@ -64,12 +64,11 @@ public class ConcentrationGame implements ConcentrationCellReceiver{
         this.tapCount = 0;
         this.attemptsValue = 0;
 
-
-        //Only make the call to get more cells if the current batch has been extinguished
-        if(concentrationCells != null && concentrationCells.size() >= GRID_SIZE/2){
+        if(concentrationCellQueue != null && concentrationCellQueue.size() >= GRID_SIZE/2){
             loadBitmaps(fetchNextCells());
         }
         else{
+            //Only make the call to get more cells if the current batch has been extinguished
             concentrationCellProvider.getConcentrationCells(this, currentPage++, BATCH_SIZE, theme);
         }
     }
@@ -77,13 +76,12 @@ public class ConcentrationGame implements ConcentrationCellReceiver{
 
     /**
      * Callback to Receive a new batch of ConcentrationCells from the ConcentrationCellProvider
+     * @param concentrationCellQueue
      */
     @Override
-    public void loadConcentrationCells(List<ConcentrationCell> concentrationCells) {
-        this.concentrationCells = concentrationCells;
-        logHelper.debug(Constants.LOGTAG, "[ConcentrationGame] Loading concentration cells: " + concentrationCells);
-
-        loadBitmaps(fetchNextCells()); //must be called before fetchNextCells
+    public void loadConcentrationCellQueue(Queue<ConcentrationCell> concentrationCellQueue) {
+        this.concentrationCellQueue = concentrationCellQueue;
+        loadBitmaps(fetchNextCells());
     }
 
     /**
@@ -146,12 +144,9 @@ public class ConcentrationGame implements ConcentrationCellReceiver{
     private List<ConcentrationCell> fetchNextCells() {
         List<ConcentrationCell> results = new ArrayList<>();
 
-        if(concentrationCells != null && concentrationCells.size() >= GRID_SIZE/2){
-            Iterator<ConcentrationCell> iter = concentrationCells.iterator();
+        if(concentrationCellQueue != null && concentrationCellQueue.size() >= GRID_SIZE/2){
             for(int i =0; i<GRID_SIZE/2; i++){
-                ConcentrationCell concentrationCell = iter.next();
-                results.add(concentrationCell);
-                iter.remove();
+                results.add(concentrationCellQueue.poll());
             }
             return results;
         }

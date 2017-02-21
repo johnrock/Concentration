@@ -3,9 +3,11 @@ package com.sho.hire.hw.piserjohnmemory.flickr;
 import com.sho.hire.hw.piserjohnmemory.concentration.ConcentrationCell;
 import com.sho.hire.hw.piserjohnmemory.concentration.ConcentrationCellProvider;
 import com.sho.hire.hw.piserjohnmemory.concentration.ConcentrationCellReceiver;
+import com.sho.hire.hw.piserjohnmemory.concentration.ConcentrationGame;
 
-import java.util.ArrayList;
+import java.util.ArrayDeque;
 import java.util.List;
+import java.util.Queue;
 
 import javax.inject.Inject;
 
@@ -41,19 +43,21 @@ public class FlickrConcentrationCellProvider implements ConcentrationCellProvide
 
     @Override
     public void loadFlickrPhotos(List<FlickrPhoto> flickrFlickrPhotoList) {
-        concentrationCellReceiver.loadConcentrationCells(convertPhotos(flickrFlickrPhotoList));
+        concentrationCellReceiver.loadConcentrationCellQueue(convertPhotos(flickrFlickrPhotoList));
     }
 
-    private List<ConcentrationCell> convertPhotos(List<FlickrPhoto> flickrFlickrPhotoList) {
+    private Queue<ConcentrationCell> convertPhotos(List<FlickrPhoto> flickrFlickrPhotoList) {
         if(flickrFlickrPhotoList != null){
-            List<ConcentrationCell> concentrationCells = new ArrayList<>();
+
+            Queue<ConcentrationCell> concentrationCellQueue = new ArrayDeque<>(ConcentrationGame.BATCH_SIZE);
             for (FlickrPhoto flickrPhoto : flickrFlickrPhotoList) {
                 ConcentrationCell concentrationCell = new ConcentrationCell();
                 concentrationCell.setUrl(composeImageUrl(flickrPhoto));
                 concentrationCell.setId(flickrPhoto.getId());
-                concentrationCells.add(concentrationCell);
+
+                concentrationCellQueue.add(concentrationCell);
             }
-            return concentrationCells;
+            return concentrationCellQueue;
         }
         return null;
     }

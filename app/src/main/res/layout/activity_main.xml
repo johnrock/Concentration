@@ -38,6 +38,16 @@
         android:textColor="@color/colorPrimaryDark"
         />
 
+    <TextView
+        android:id="@+id/gamesolved"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="PUZZEL SOLVED!"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:textColor="@color/colorAccent"
+        />
+
     <GridView
         android:id="@+id/gridview"
         android:layout_width="wrap_content"

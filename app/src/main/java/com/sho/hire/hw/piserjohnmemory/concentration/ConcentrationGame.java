@@ -20,11 +20,8 @@ import javax.inject.Inject;
 
 public class ConcentrationGame implements ConcentrationCellReceiver{
 
-
     public interface Host{
-
         void displayConcentrationCells();
-
         void onTappedCell(int tapCount);
     }
     private static final int BATCH_SIZE = 80;
@@ -98,10 +95,6 @@ public class ConcentrationGame implements ConcentrationCellReceiver{
         host.displayConcentrationCells();
     }
 
-    /**
-     * Called when a user taps on a cell
-     * @param position of the game cell tapped
-     */
     public void tapCell(int position) {
         tapCount++;
         ConcentrationCell concentrationCell = gameCells.get(position);
@@ -160,7 +153,6 @@ public class ConcentrationGame implements ConcentrationCellReceiver{
             logHelper.debug(Constants.LOGTAG, "[ConcentrationGame] fetching concentration cells: " + results);
             return results;
         }
-
         return null;
     }
 
@@ -179,5 +171,19 @@ public class ConcentrationGame implements ConcentrationCellReceiver{
                 gameCell.setShowing(false);
             }
         }
+    }
+
+    public boolean isSolved() {
+        if(gameCells == null || gameCells.isEmpty()){
+            return false;
+        }
+
+        int solvedCount = 0;
+        for (ConcentrationCell gameCell : gameCells) {
+            if(gameCell.isMatched()){
+                solvedCount++;
+            }
+        }
+        return solvedCount == gameCells.size();
     }
 }

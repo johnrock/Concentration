@@ -29,10 +29,10 @@ public class MainActivity extends AppCompatActivity implements ConcentrationGame
     @Inject LogHelper logHelper;
     @Inject ConcentrationGame concentrationGame;
 
-
     GridView gridView;
     TextView attemptsValueTextView;
     TextView attemptsLabelTextView;
+    TextView gamesolvedTextView;
     ProgressBar progressBar;
     Button buttonNewGame;
 
@@ -47,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements ConcentrationGame
         buttonNewGame = (Button) findViewById(R.id.buttonNewGame);
         attemptsValueTextView = (TextView) findViewById(R.id.attemptsValue);
         attemptsLabelTextView = (TextView) findViewById(R.id.attempts);
+        gamesolvedTextView = (TextView) findViewById(R.id.gamesolved);
 
         //Dagger dependency injection
         ((ConcentrationApplication)getApplication()).getAppComponent().inject(this);
@@ -92,19 +93,16 @@ public class MainActivity extends AppCompatActivity implements ConcentrationGame
 
     @Override
     public void onTappedCell(int tapCount) {
-
         logHelper.debug(Constants.LOGTAG, "[MainActivity] Inside onTappedCell with tapCount: " + tapCount);
         displayConcentrationCells();
 
         if(tapCount ==2){
             pauseGameIfTappedCellsDoNotMatch();
         }
-
     }
 
     private void pauseGameIfTappedCellsDoNotMatch() {
         if(concentrationGame.containsMisMatchedCells()){
-            //TODO: turn off clickablility
 
             gridView.postDelayed(new Runnable() {
                 @Override
@@ -124,6 +122,7 @@ public class MainActivity extends AppCompatActivity implements ConcentrationGame
             gridView.setVisibility(View.INVISIBLE);
             attemptsValueTextView.setVisibility(View.INVISIBLE);
             attemptsLabelTextView.setVisibility(View.INVISIBLE);
+            gamesolvedTextView.setVisibility(View.INVISIBLE);
         }
         else{
             progressBar.setVisibility(View.GONE);
@@ -131,6 +130,9 @@ public class MainActivity extends AppCompatActivity implements ConcentrationGame
             gridView.setVisibility(View.VISIBLE);
             attemptsValueTextView.setVisibility(View.VISIBLE);
             attemptsLabelTextView.setVisibility(View.VISIBLE);
+        }
+        if(concentrationGame.isSolved()){
+            gamesolvedTextView.setVisibility(View.VISIBLE);
         }
     }
 }

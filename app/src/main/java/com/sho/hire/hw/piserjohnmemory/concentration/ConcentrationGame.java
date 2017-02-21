@@ -97,11 +97,12 @@ public class ConcentrationGame implements ConcentrationCellReceiver{
     }
 
     public void tapCell(int position) {
-        tapCount++;
         ConcentrationCell concentrationCell = gameCells.get(position);
-        if(concentrationCell.isMatched()){
+        if(concentrationCell.isShowing()){
             return;
         }
+        tapCount++;
+
         concentrationCell.setShowing(true);
         ConcentrationCell duplicate = concentrationCell.getDuplicate();
         if(duplicate.isShowing()){
@@ -122,12 +123,14 @@ public class ConcentrationGame implements ConcentrationCellReceiver{
      * - duplicate each cell, add to the collection, and shuffle
      */
     private void prepareGameCells(List<ConcentrationCell> gameCells) {
-        List<ConcentrationCell> duplicates = new ArrayList<>();
-        for (ConcentrationCell gameCell : gameCells) {
-            duplicates.add(gameCell.duplicate());
+        if(gameCells != null){
+            List<ConcentrationCell> duplicates = new ArrayList<>();
+            for (ConcentrationCell gameCell : gameCells) {
+                duplicates.add(gameCell.duplicate());
+            }
+            gameCells.addAll(duplicates);
+            Collections.shuffle(gameCells);
         }
-        gameCells.addAll(duplicates);
-        Collections.shuffle(gameCells);
     }
 
     /**

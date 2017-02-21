@@ -32,6 +32,7 @@ public class MainActivity extends AppCompatActivity implements ConcentrationGame
     TextView attemptsValueTextView;
     TextView attemptsLabelTextView;
     TextView gamesolvedTextView;
+    TextView connectivityMessageTextView;
     ProgressBar progressBar;
     Button buttonNewGame;
 
@@ -47,6 +48,7 @@ public class MainActivity extends AppCompatActivity implements ConcentrationGame
         attemptsValueTextView = (TextView) findViewById(R.id.attemptsValue);
         attemptsLabelTextView = (TextView) findViewById(R.id.attempts);
         gamesolvedTextView = (TextView) findViewById(R.id.gamesolved);
+        connectivityMessageTextView = (TextView) findViewById(R.id.connectivityMessage);
 
         //Dagger dependency injection
         ((ConcentrationApplication)getApplication()).getAppComponent().inject(this);
@@ -83,10 +85,15 @@ public class MainActivity extends AppCompatActivity implements ConcentrationGame
 
     @Override
     public void displayConcentrationCells() {
-        ConcentrationGridViewImageAdapter gridViewImageAdapter = new ConcentrationGridViewImageAdapter(this, concentrationGame.getGameCells(), logHelper);
-        gridView.setAdapter(gridViewImageAdapter);
-        attemptsValueTextView.setText(String.valueOf(concentrationGame.getAttemptsValue()));
-        toggleLoading(false, false);
+        if(concentrationGame.getGameCells() != null && !concentrationGame.getGameCells().isEmpty()){
+            ConcentrationGridViewImageAdapter gridViewImageAdapter = new ConcentrationGridViewImageAdapter(this, concentrationGame.getGameCells(), logHelper);
+            gridView.setAdapter(gridViewImageAdapter);
+            attemptsValueTextView.setText(String.valueOf(concentrationGame.getAttemptsValue()));
+            toggleLoading(false, false);
+        }
+        else{
+            showCheckConnectionMessage();
+        }
     }
 
     @Override
@@ -118,6 +125,7 @@ public class MainActivity extends AppCompatActivity implements ConcentrationGame
             attemptsValueTextView.setVisibility(View.INVISIBLE);
             attemptsLabelTextView.setVisibility(View.INVISIBLE);
             gamesolvedTextView.setVisibility(View.INVISIBLE);
+            connectivityMessageTextView.setVisibility(View.GONE);
         }
         else{
             progressBar.setVisibility(View.GONE);
@@ -130,5 +138,17 @@ public class MainActivity extends AppCompatActivity implements ConcentrationGame
             attemptsValueTextView.setVisibility(View.VISIBLE);
             attemptsLabelTextView.setVisibility(View.VISIBLE);
         }
+    }
+
+    private void showCheckConnectionMessage() {
+
+        progressBar.setVisibility(View.GONE);
+        buttonNewGame.setVisibility(View.VISIBLE);
+        gridView.setVisibility(View.INVISIBLE);
+        attemptsValueTextView.setVisibility(View.INVISIBLE);
+        attemptsLabelTextView.setVisibility(View.INVISIBLE);
+        gamesolvedTextView.setVisibility(View.INVISIBLE);
+        connectivityMessageTextView.setVisibility(View.VISIBLE);
+
     }
 }

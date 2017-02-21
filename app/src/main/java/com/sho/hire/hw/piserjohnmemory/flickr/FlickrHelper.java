@@ -138,7 +138,7 @@ public class FlickrHelper implements HttpHelper.ResponseListener {
     private JSONObject makeJsonObject(String response) {
         //prefix to the json: jsonFlickrApi(........)
 
-        if(response != null){
+        if(response != null && response.length() > 0){
             String pureJson = response.substring(14, response.length() - 1);
             try {
                 return new JSONObject(pureJson);

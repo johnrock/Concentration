@@ -18,10 +18,21 @@
 
 
     <TextView
+        android:id="@+id/connectivityMessage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/messsage_check_connection"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:textColor="@color/colorPrimaryDark"
+        android:textStyle="bold"
+        />
+
+    <TextView
         android:id="@+id/attempts"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Attempts: "
+        android:text="@string/label_attempts"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         android:textColor="@color/colorPrimaryDark"
@@ -42,7 +53,7 @@
         android:id="@+id/gamesolved"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="PUZZEL SOLVED!"
+        android:text="@string/message_puzzel_solved"
         android:layout_alignParentTop="true"
         android:layout_alignParentRight="true"
         android:textColor="@color/colorAccent"
@@ -55,7 +66,7 @@
         android:columnWidth="150dp"
         android:numColumns="4"
         android:verticalSpacing="20dp"
-        android:horizontalSpacing="2dp"
+        android:horizontalSpacing="0dp"
         android:stretchMode="spacingWidthUniform"
         android:gravity="center"
         android:layout_marginTop="10dp"

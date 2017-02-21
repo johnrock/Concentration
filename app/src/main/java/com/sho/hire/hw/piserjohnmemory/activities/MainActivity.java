@@ -3,6 +3,7 @@ package com.sho.hire.hw.piserjohnmemory.activities;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ProgressBar;
@@ -16,13 +17,12 @@ import com.sho.hire.hw.piserjohnmemory.helpers.LogHelper;
 import com.sho.hire.hw.piserjohnmemory.util.Constants;
 import com.sho.hire.hw.piserjohnmemory.util.GridViewImageAdapter;
 
-import java.util.List;
-
 import javax.inject.Inject;
 
 public class MainActivity extends AppCompatActivity implements ConcentrationGame.Host {
 
     public static final String THEME_KITTEN = "kitten";
+    public static final int MISMATCH_TIMEOUT = 5000;
 
     @Inject FlickrHelper flickrHelper;
     @Inject LogHelper logHelper;
@@ -46,7 +46,28 @@ public class MainActivity extends AppCompatActivity implements ConcentrationGame
         //Dagger dependency injection
         ((ConcentrationApplication)getApplication()).getAppComponent().inject(this);
 
+        initGridView();
+
         startGame(null);
+    }
+
+    private void initGridView() {
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                int showingNonMatchedCount = 0;
+                for (ConcentrationCell concentrationCell : concentrationGame.getGameCells()) {
+                    if(!concentrationCell.isMatched() && (concentrationCell.isShowing())){
+                        showingNonMatchedCount++;
+                    }
+                }
+                if(showingNonMatchedCount < 2){
+                    //Cell tapping is bypassed if there are already two non matched cells showing
+                    concentrationGame.tapCell(position);
+                }
+            }
+        });
     }
 
     public void startGame(View view) {
@@ -55,13 +76,37 @@ public class MainActivity extends AppCompatActivity implements ConcentrationGame
     }
 
     @Override
-    public void displayConcentrationCells(List<ConcentrationCell> concentrationCells) {
+    public void displayConcentrationCells() {
         logHelper.debug(Constants.LOGTAG, "[MainActivity] displaying concentration cells...");
-        GridViewImageAdapter gridViewImageAdapter = new GridViewImageAdapter(this, concentrationCells, logHelper);
+        GridViewImageAdapter gridViewImageAdapter = new GridViewImageAdapter(this, concentrationGame.getGameCells(), logHelper);
         gridView.setAdapter(gridViewImageAdapter);
-
         toggleLoading(false);
+    }
 
+    @Override
+    public void onTappedCell(int position, int tapCount) {
+
+        displayConcentrationCells();
+
+        if(tapCount ==2){
+            pauseGameIfTappedCellsDoNotMatch();
+        }
+
+    }
+
+    private void pauseGameIfTappedCellsDoNotMatch() {
+        if(concentrationGame.containsMisMatchedCells()){
+            //TODO: turn off clickablility
+
+            gridView.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    concentrationGame.resetMisMatchedCells();
+                    displayConcentrationCells();
+                }
+            }, MISMATCH_TIMEOUT);
+
+        }
     }
 
     private void toggleLoading(boolean loading) {

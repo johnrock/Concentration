@@ -13,14 +13,16 @@ import java.util.List;
 
 /**
  * @author John Piser johnpiser@yahoo.com
+ *
+ * Task to download bitmaps for the current batch of concentration cells
  */
 
-public class ImageDownloadTask extends AsyncTask<String, Void, String> {
+public class ConcentrationImageDownloadTask extends AsyncTask<String, Void, String> {
     private ConcentrationCellReceiver concentrationCellReceiver;
     private LogHelper logHelper;
     private List<ConcentrationCell> concentrationCells;
 
-    public ImageDownloadTask(ConcentrationCellReceiver concentrationCellReceiver, LogHelper logHelper, List<ConcentrationCell> concentrationCells) {
+    public ConcentrationImageDownloadTask(ConcentrationCellReceiver concentrationCellReceiver, LogHelper logHelper, List<ConcentrationCell> concentrationCells) {
         this.concentrationCellReceiver = concentrationCellReceiver;
         this.logHelper = logHelper;
         this.concentrationCells = concentrationCells;
@@ -28,7 +30,7 @@ public class ImageDownloadTask extends AsyncTask<String, Void, String> {
 
     protected String doInBackground(String... params) {
 
-        logHelper.debug(Constants.LOGTAG, "[ImageDownloadTask] Downloading bitmap images in background thread ....");
+        logHelper.debug(Constants.LOGTAG, "[ConcentrationImageDownloadTask] Downloading bitmap images in background thread ....");
 
         int count = 1;
         if(concentrationCells != null){
@@ -49,6 +51,6 @@ public class ImageDownloadTask extends AsyncTask<String, Void, String> {
     }
 
     protected void onPostExecute(String result) {
-        this.concentrationCellReceiver.displayConcentrationCells(concentrationCells);
+        this.concentrationCellReceiver.loadGameCells(concentrationCells);
     }
 }

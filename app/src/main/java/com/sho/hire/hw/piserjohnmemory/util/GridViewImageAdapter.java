@@ -47,7 +47,6 @@ public class GridViewImageAdapter extends BaseAdapter{
     public View getView(int position, View convertView, ViewGroup parent) {
         ImageView imageView;
         if (convertView == null) {
-            // if it's not recycled, initialize some attributes
             imageView = new ImageView(context);
             imageView.setLayoutParams(new GridView.LayoutParams(150, 150));
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
@@ -68,4 +67,5 @@ public class GridViewImageAdapter extends BaseAdapter{
         return imageView;
 
     }
+
 }

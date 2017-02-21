@@ -3,7 +3,7 @@ package com.sho.hire.hw.piserjohnmemory.concentration;
 import com.sho.hire.hw.piserjohnmemory.R;
 import com.sho.hire.hw.piserjohnmemory.helpers.LogHelper;
 import com.sho.hire.hw.piserjohnmemory.util.Constants;
-import com.sho.hire.hw.piserjohnmemory.util.ImageDownloadTask;
+import com.sho.hire.hw.piserjohnmemory.util.ConcentrationImageDownloadTask;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,28 +21,34 @@ import javax.inject.Inject;
 
 public class ConcentrationGame implements ConcentrationCellReceiver{
 
+
     public interface Host{
-        void displayConcentrationCells(List<ConcentrationCell> concentrationCells);
 
+        void displayConcentrationCells();
+
+        void onTappedCell(int position, int tapCount);
     }
-
     private static final int BATCH_SIZE = 80;
     private static final int GRID_SIZE = 16;
-    public static  final int DEFAULT_GRID_ICON = R.drawable.cat_icon;
 
+    public static  final int DEFAULT_GRID_ICON = R.drawable.cat_icon;
     LogHelper logHelper;
     ConcentrationCellProvider concentrationCellProvider;
+
     private String[] theme;
-    private List<ConcentrationCell> concentrationCells;
+    private List<ConcentrationCell> concentrationCells; //Inventory of cells pre loaded from a ConcentrationCellProvider
+    private List<ConcentrationCell> gameCells;          //Cells in the current game
     private int currentPage;
     private Host host;
-
-
+    private int tapCount;
     @Inject
     public ConcentrationGame(LogHelper logHelper, ConcentrationCellProvider concentrationCellProvider) {
         this.logHelper = logHelper;
         this.concentrationCellProvider = concentrationCellProvider;
         currentPage = 1;
+    }
+    public List<ConcentrationCell> getGameCells() {
+        return gameCells;
     }
 
 
@@ -53,6 +59,7 @@ public class ConcentrationGame implements ConcentrationCellReceiver{
         }
         this.host = host;
         this.theme = theme;
+        this.tapCount = 0;
 
 
         //Only make the call to get more cells if the current batch has been extinguished
@@ -63,6 +70,7 @@ public class ConcentrationGame implements ConcentrationCellReceiver{
             concentrationCellProvider.getConcentrationCells(this, currentPage++, BATCH_SIZE, theme);
         }
     }
+
 
     /**
      * Callback to Receive a new batch of ConcentrationCells from the ConcentrationCellProvider
@@ -76,13 +84,37 @@ public class ConcentrationGame implements ConcentrationCellReceiver{
     }
 
     @Override
-    public void displayConcentrationCells(List<ConcentrationCell> gameCells) {
+    public void loadGameCells(List<ConcentrationCell> gameCells) {
+        this.gameCells = gameCells;
 
         prepareGameCells(gameCells);
 
         logHelper.debug(Constants.LOGTAG, "[ConcentrationGame] Displaying game concentration cells on host");
-        host.displayConcentrationCells(gameCells);
+        host.displayConcentrationCells();
     }
+
+    /**
+     * Called when a user taps on a cell
+     * @param position of the game cell tapped
+     */
+    public void tapCell(int position) {
+        tapCount++;
+        ConcentrationCell concentrationCell = gameCells.get(position);
+        if(concentrationCell.isMatched()){
+            return;
+        }
+        concentrationCell.setShowing(true);
+        ConcentrationCell duplicate = concentrationCell.getDuplicate();
+        if(duplicate.isShowing()){
+            concentrationCell.setMatched(true);
+            duplicate.setMatched(true);
+        }
+
+        host.onTappedCell(position, tapCount);
+
+        tapCount = tapCount == 2 ? 0 : tapCount;
+    }
+
 
     /**
      * Final method before returning the game cells to the view:
@@ -103,7 +135,7 @@ public class ConcentrationGame implements ConcentrationCellReceiver{
      */
     private void loadBitmaps(List<ConcentrationCell> gameCells) {
         if(this.concentrationCells != null){
-            new ImageDownloadTask(this, logHelper,gameCells).execute();
+            new ConcentrationImageDownloadTask(this, logHelper,gameCells).execute();
         }
     }
 
@@ -123,5 +155,22 @@ public class ConcentrationGame implements ConcentrationCellReceiver{
         }
 
         return null;
+    }
+
+    public boolean containsMisMatchedCells() {
+        for (ConcentrationCell gameCell : gameCells) {
+            if(!gameCell.isMatched() && (gameCell.isShowing() && !gameCell.getDuplicate().isShowing())){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void resetMisMatchedCells() {
+        for (ConcentrationCell gameCell : gameCells) {
+            if(!gameCell.isMatched() && (gameCell.isShowing() && !gameCell.getDuplicate().isShowing())){
+                gameCell.setShowing(false);
+            }
+        }
     }
 }

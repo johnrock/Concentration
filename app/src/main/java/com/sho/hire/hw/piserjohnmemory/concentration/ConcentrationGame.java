@@ -24,10 +24,11 @@ public class ConcentrationGame implements ConcentrationCellReceiver{
         void displayConcentrationCells();
         void onTappedCell(int tapCount);
     }
+    public static final int MISMATCH_TIMEOUT = 1000;
+    public static  final int DEFAULT_GRID_ICON = R.drawable.cat_icon;
     private static final int BATCH_SIZE = 80;
     private static final int GRID_SIZE = 16;
 
-    public static  final int DEFAULT_GRID_ICON = R.drawable.cat_icon;
     LogHelper logHelper;
     ConcentrationCellProvider concentrationCellProvider;
 
@@ -85,13 +86,13 @@ public class ConcentrationGame implements ConcentrationCellReceiver{
         loadBitmaps(fetchNextCells()); //must be called before fetchNextCells
     }
 
+    /**
+     * Callback to load a new game on the host
+     */
     @Override
-    public void loadGameCells(List<ConcentrationCell> gameCells) {
+    public void loadGameCellsOnUiThread(List<ConcentrationCell> gameCells) {
         this.gameCells = gameCells;
-
         prepareGameCells(gameCells);
-
-        logHelper.debug(Constants.LOGTAG, "[ConcentrationGame] Displaying game concentration cells on host");
         host.displayConcentrationCells();
     }
 
@@ -149,8 +150,6 @@ public class ConcentrationGame implements ConcentrationCellReceiver{
                 results.add(concentrationCell);
                 iter.remove();
             }
-
-            logHelper.debug(Constants.LOGTAG, "[ConcentrationGame] fetching concentration cells: " + results);
             return results;
         }
         return null;

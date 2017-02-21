@@ -13,17 +13,16 @@ import com.sho.hire.hw.piserjohnmemory.R;
 import com.sho.hire.hw.piserjohnmemory.application.ConcentrationApplication;
 import com.sho.hire.hw.piserjohnmemory.concentration.ConcentrationCell;
 import com.sho.hire.hw.piserjohnmemory.concentration.ConcentrationGame;
+import com.sho.hire.hw.piserjohnmemory.concentration.ConcentrationGridViewImageAdapter;
 import com.sho.hire.hw.piserjohnmemory.flickr.FlickrHelper;
 import com.sho.hire.hw.piserjohnmemory.helpers.LogHelper;
-import com.sho.hire.hw.piserjohnmemory.util.Constants;
-import com.sho.hire.hw.piserjohnmemory.concentration.ConcentrationGridViewImageAdapter;
 
 import javax.inject.Inject;
 
 public class MainActivity extends AppCompatActivity implements ConcentrationGame.Host {
 
     public static final String THEME_KITTEN = "kitten";
-    public static final int MISMATCH_TIMEOUT = 3000;
+
 
     @Inject FlickrHelper flickrHelper;
     @Inject LogHelper logHelper;
@@ -78,24 +77,21 @@ public class MainActivity extends AppCompatActivity implements ConcentrationGame
 
     public void startGame(View view) {
 
-        toggleLoading(true);
+        toggleLoading(true, true);
         concentrationGame.init(this, THEME_KITTEN);
     }
 
     @Override
     public void displayConcentrationCells() {
-        logHelper.debug(Constants.LOGTAG, "[MainActivity] displaying concentration cells...");
         ConcentrationGridViewImageAdapter gridViewImageAdapter = new ConcentrationGridViewImageAdapter(this, concentrationGame.getGameCells(), logHelper);
         gridView.setAdapter(gridViewImageAdapter);
         attemptsValueTextView.setText(String.valueOf(concentrationGame.getAttemptsValue()));
-        toggleLoading(false);
+        toggleLoading(false, false);
     }
 
     @Override
     public void onTappedCell(int tapCount) {
-        logHelper.debug(Constants.LOGTAG, "[MainActivity] Inside onTappedCell with tapCount: " + tapCount);
         displayConcentrationCells();
-
         if(tapCount ==2){
             pauseGameIfTappedCellsDoNotMatch();
         }
@@ -103,19 +99,18 @@ public class MainActivity extends AppCompatActivity implements ConcentrationGame
 
     private void pauseGameIfTappedCellsDoNotMatch() {
         if(concentrationGame.containsMisMatchedCells()){
-
             gridView.postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     concentrationGame.resetMisMatchedCells();
                     displayConcentrationCells();
                 }
-            }, MISMATCH_TIMEOUT);
+            }, ConcentrationGame.MISMATCH_TIMEOUT);
 
         }
     }
 
-    private void toggleLoading(boolean loading) {
+    private void toggleLoading(boolean loading, boolean newGame) {
         if(loading){
             progressBar.setVisibility(View.VISIBLE);
             buttonNewGame.setVisibility(View.GONE);
@@ -128,11 +123,12 @@ public class MainActivity extends AppCompatActivity implements ConcentrationGame
             progressBar.setVisibility(View.GONE);
             buttonNewGame.setVisibility(View.VISIBLE);
             gridView.setVisibility(View.VISIBLE);
+
+        }
+        if(!newGame && concentrationGame.isSolved()){
+            gamesolvedTextView.setVisibility(View.VISIBLE);
             attemptsValueTextView.setVisibility(View.VISIBLE);
             attemptsLabelTextView.setVisibility(View.VISIBLE);
-        }
-        if(concentrationGame.isSolved()){
-            gamesolvedTextView.setVisibility(View.VISIBLE);
         }
     }
 }

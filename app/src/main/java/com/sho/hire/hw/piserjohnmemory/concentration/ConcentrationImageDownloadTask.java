@@ -50,6 +50,6 @@ public class ConcentrationImageDownloadTask extends AsyncTask<String, Void, Stri
     }
 
     protected void onPostExecute(String result) {
-        this.concentrationCellReceiver.loadGameCells(concentrationCells);
+        this.concentrationCellReceiver.loadGameCellsOnUiThread(concentrationCells);
     }
 }

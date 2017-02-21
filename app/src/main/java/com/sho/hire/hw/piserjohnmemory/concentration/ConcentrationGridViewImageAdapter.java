@@ -1,4 +1,4 @@
-package com.sho.hire.hw.piserjohnmemory.util;
+package com.sho.hire.hw.piserjohnmemory.concentration;
 
 import android.content.Context;
 import android.view.View;
@@ -7,7 +7,6 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 
-import com.sho.hire.hw.piserjohnmemory.concentration.ConcentrationCell;
 import com.sho.hire.hw.piserjohnmemory.helpers.LogHelper;
 
 import java.util.List;
@@ -16,13 +15,13 @@ import java.util.List;
  * @author John Piser johnpiser@yahoo.com
  */
 
-public class GridViewImageAdapter extends BaseAdapter{
+public class ConcentrationGridViewImageAdapter extends BaseAdapter{
 
     private Context context;
     private List<ConcentrationCell> concentrationCells;
     private LogHelper logHelper;
 
-    public GridViewImageAdapter(Context context, List<ConcentrationCell> concentrationCells, LogHelper logHelper) {
+    public ConcentrationGridViewImageAdapter(Context context, List<ConcentrationCell> concentrationCells, LogHelper logHelper) {
         this.context = context;
         this.concentrationCells = concentrationCells;
         this.logHelper = logHelper;

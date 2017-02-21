@@ -15,6 +15,29 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true" />
 
+
+
+    <TextView
+        android:id="@+id/attempts"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Attempts: "
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:textColor="@color/colorPrimaryDark"
+        android:textStyle="bold"
+        />
+
+    <TextView
+        android:id="@+id/attemptsValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="-"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/attempts"
+        android:textColor="@color/colorPrimaryDark"
+        />
+
     <GridView
         android:id="@+id/gridview"
         android:layout_width="wrap_content"
@@ -25,6 +48,8 @@
         android:horizontalSpacing="2dp"
         android:stretchMode="spacingWidthUniform"
         android:gravity="center"
+        android:layout_marginTop="10dp"
+        android:layout_below="@+id/attempts"
         />
 
     <Button

@@ -1,12 +1,11 @@
-package com.sho.hire.hw.piserjohnmemory.util;
+package com.sho.hire.hw.piserjohnmemory.concentration;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 
-import com.sho.hire.hw.piserjohnmemory.concentration.ConcentrationCell;
-import com.sho.hire.hw.piserjohnmemory.concentration.ConcentrationCellReceiver;
 import com.sho.hire.hw.piserjohnmemory.helpers.LogHelper;
+import com.sho.hire.hw.piserjohnmemory.util.Constants;
 
 import java.io.InputStream;
 import java.util.List;

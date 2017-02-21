@@ -3,7 +3,6 @@ package com.sho.hire.hw.piserjohnmemory.concentration;
 import com.sho.hire.hw.piserjohnmemory.R;
 import com.sho.hire.hw.piserjohnmemory.helpers.LogHelper;
 import com.sho.hire.hw.piserjohnmemory.util.Constants;
-import com.sho.hire.hw.piserjohnmemory.util.ConcentrationImageDownloadTask;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,7 +25,7 @@ public class ConcentrationGame implements ConcentrationCellReceiver{
 
         void displayConcentrationCells();
 
-        void onTappedCell(int position, int tapCount);
+        void onTappedCell(int tapCount);
     }
     private static final int BATCH_SIZE = 80;
     private static final int GRID_SIZE = 16;
@@ -41,6 +40,8 @@ public class ConcentrationGame implements ConcentrationCellReceiver{
     private int currentPage;
     private Host host;
     private int tapCount;
+    private int attemptsValue;
+
     @Inject
     public ConcentrationGame(LogHelper logHelper, ConcentrationCellProvider concentrationCellProvider) {
         this.logHelper = logHelper;
@@ -51,6 +52,9 @@ public class ConcentrationGame implements ConcentrationCellReceiver{
         return gameCells;
     }
 
+    public int getAttemptsValue() {
+        return attemptsValue;
+    }
 
     public void init(Host host, String... theme) {
         if(host == null){
@@ -60,6 +64,7 @@ public class ConcentrationGame implements ConcentrationCellReceiver{
         this.host = host;
         this.theme = theme;
         this.tapCount = 0;
+        this.attemptsValue = 0;
 
 
         //Only make the call to get more cells if the current batch has been extinguished
@@ -110,7 +115,9 @@ public class ConcentrationGame implements ConcentrationCellReceiver{
             duplicate.setMatched(true);
         }
 
-        host.onTappedCell(position, tapCount);
+        attemptsValue = tapCount == 2 ? ++attemptsValue : attemptsValue;
+
+        host.onTappedCell(tapCount);
 
         tapCount = tapCount == 2 ? 0 : tapCount;
     }

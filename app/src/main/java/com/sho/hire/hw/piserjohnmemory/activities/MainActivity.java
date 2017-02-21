@@ -7,6 +7,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.sho.hire.hw.piserjohnmemory.R;
 import com.sho.hire.hw.piserjohnmemory.application.ConcentrationApplication;
@@ -15,14 +16,14 @@ import com.sho.hire.hw.piserjohnmemory.concentration.ConcentrationGame;
 import com.sho.hire.hw.piserjohnmemory.flickr.FlickrHelper;
 import com.sho.hire.hw.piserjohnmemory.helpers.LogHelper;
 import com.sho.hire.hw.piserjohnmemory.util.Constants;
-import com.sho.hire.hw.piserjohnmemory.util.GridViewImageAdapter;
+import com.sho.hire.hw.piserjohnmemory.concentration.ConcentrationGridViewImageAdapter;
 
 import javax.inject.Inject;
 
 public class MainActivity extends AppCompatActivity implements ConcentrationGame.Host {
 
     public static final String THEME_KITTEN = "kitten";
-    public static final int MISMATCH_TIMEOUT = 5000;
+    public static final int MISMATCH_TIMEOUT = 3000;
 
     @Inject FlickrHelper flickrHelper;
     @Inject LogHelper logHelper;
@@ -30,6 +31,8 @@ public class MainActivity extends AppCompatActivity implements ConcentrationGame
 
 
     GridView gridView;
+    TextView attemptsValueTextView;
+    TextView attemptsLabelTextView;
     ProgressBar progressBar;
     Button buttonNewGame;
 
@@ -42,6 +45,8 @@ public class MainActivity extends AppCompatActivity implements ConcentrationGame
         gridView = (GridView) findViewById(R.id.gridview);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         buttonNewGame = (Button) findViewById(R.id.buttonNewGame);
+        attemptsValueTextView = (TextView) findViewById(R.id.attemptsValue);
+        attemptsLabelTextView = (TextView) findViewById(R.id.attempts);
 
         //Dagger dependency injection
         ((ConcentrationApplication)getApplication()).getAppComponent().inject(this);
@@ -71,6 +76,7 @@ public class MainActivity extends AppCompatActivity implements ConcentrationGame
     }
 
     public void startGame(View view) {
+
         toggleLoading(true);
         concentrationGame.init(this, THEME_KITTEN);
     }
@@ -78,14 +84,16 @@ public class MainActivity extends AppCompatActivity implements ConcentrationGame
     @Override
     public void displayConcentrationCells() {
         logHelper.debug(Constants.LOGTAG, "[MainActivity] displaying concentration cells...");
-        GridViewImageAdapter gridViewImageAdapter = new GridViewImageAdapter(this, concentrationGame.getGameCells(), logHelper);
+        ConcentrationGridViewImageAdapter gridViewImageAdapter = new ConcentrationGridViewImageAdapter(this, concentrationGame.getGameCells(), logHelper);
         gridView.setAdapter(gridViewImageAdapter);
+        attemptsValueTextView.setText(String.valueOf(concentrationGame.getAttemptsValue()));
         toggleLoading(false);
     }
 
     @Override
-    public void onTappedCell(int position, int tapCount) {
+    public void onTappedCell(int tapCount) {
 
+        logHelper.debug(Constants.LOGTAG, "[MainActivity] Inside onTappedCell with tapCount: " + tapCount);
         displayConcentrationCells();
 
         if(tapCount ==2){
@@ -114,11 +122,15 @@ public class MainActivity extends AppCompatActivity implements ConcentrationGame
             progressBar.setVisibility(View.VISIBLE);
             buttonNewGame.setVisibility(View.GONE);
             gridView.setVisibility(View.INVISIBLE);
+            attemptsValueTextView.setVisibility(View.INVISIBLE);
+            attemptsLabelTextView.setVisibility(View.INVISIBLE);
         }
         else{
             progressBar.setVisibility(View.GONE);
             buttonNewGame.setVisibility(View.VISIBLE);
             gridView.setVisibility(View.VISIBLE);
+            attemptsValueTextView.setVisibility(View.VISIBLE);
+            attemptsLabelTextView.setVisibility(View.VISIBLE);
         }
     }
 }

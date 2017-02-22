@@ -138,7 +138,8 @@ public class ConcentrationGame implements ConcentrationCellReceiver{
         }
     }
 
-    private List<ConcentrationCell> fetchNextCells() {
+    //protected access for testability
+    protected List<ConcentrationCell> fetchNextCells() {
         List<ConcentrationCell> results = new ArrayList<>();
 
         if(concentrationCellQueue != null && concentrationCellQueue.size() >= GRID_SIZE/2){

@@ -32,7 +32,7 @@ public class ConcentrationImageDownloadTask extends AsyncTask<String, Void, Stri
         logHelper.debug(Constants.LOGTAG, "[ConcentrationImageDownloadTask] Downloading bitmap images in background thread ....");
 
         int count = 1;
-        if(concentrationCells != null){
+        if(concentrationCells != null && !concentrationCells.isEmpty()){
             for (ConcentrationCell concentrationCell : concentrationCells) {
                 Bitmap bitmap = null;
                 logHelper.debug(Constants.LOGTAG, "...loading bitmap: " + count++);

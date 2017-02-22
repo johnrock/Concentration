@@ -22,9 +22,8 @@ public class ConcentrationDownloadHelper {
     }
 
     public void downloadImages(ConcentrationCellReceiver concentrationCellReceiver , List<ConcentrationCell> concentrationCells){
-        if(concentrationCells != null && !concentrationCells.isEmpty()){
 
-            new ConcentrationImageDownloadTask(concentrationCellReceiver, logHelper, concentrationCells).execute();
-        }
+        new ConcentrationImageDownloadTask(concentrationCellReceiver, logHelper, concentrationCells).execute();
+
     }
 }

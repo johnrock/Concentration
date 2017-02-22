@@ -124,8 +124,10 @@ public class ConcentrationGame implements ConcentrationCellReceiver{
     /**
      * Final method before returning the game cells to the view:
      * - duplicate each cell, add to the collection, and shuffle
+     *
+     * protected access for testability
      */
-    private void prepareGameCells(List<ConcentrationCell> gameCells) {
+    protected void prepareGameCells(List<ConcentrationCell> gameCells) {
         if(gameCells != null){
             List<ConcentrationCell> duplicates = new ArrayList<>();
             for (ConcentrationCell gameCell : gameCells) {

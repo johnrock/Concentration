@@ -1,7 +1,5 @@
 package com.sho.hire.hw.piserjohnmemory.concentration;
 
-import android.support.annotation.NonNull;
-
 import com.sho.hire.hw.piserjohnmemory.helpers.LogHelper;
 
 import org.junit.Before;
@@ -11,6 +9,9 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Queue;
 
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -29,14 +30,18 @@ public class ConcentrationGameTest {
     @Mock ConcentrationGame.Host host;
     @Mock ConcentrationDownloadHelper concentrationDownloadHelper;
 
+    ConcentrationGame concentrationGame;
+
     @Before
     public void setup(){
         MockitoAnnotations.initMocks(this);
+
+        concentrationGame = new ConcentrationGame(logHelper, concentrationCellProvider, concentrationDownloadHelper);
+
     }
 
     @Test
     public void shouldInitStateDuringInit(){
-        ConcentrationGame concentrationGame = new ConcentrationGame(logHelper, concentrationCellProvider, concentrationDownloadHelper);
         concentrationGame.init(host,  TAGS);
 
         assertEquals(0, concentrationGame.getTapCount());
@@ -48,7 +53,6 @@ public class ConcentrationGameTest {
 
     @Test
     public void shouldGetConcentrationCellsDuringInitIfNeeded(){
-        ConcentrationGame concentrationGame = new ConcentrationGame(logHelper, concentrationCellProvider, concentrationDownloadHelper);
         concentrationGame.init(host,  TAGS);
 
         verifyZeroInteractions(concentrationDownloadHelper);
@@ -57,25 +61,90 @@ public class ConcentrationGameTest {
 
     @Test
     public void shouldDownloadImagesAndNotGetConcentrationCellsDuringInitIfInventoryExists(){
-        ConcentrationGame concentrationGame = new ConcentrationGame(logHelper, concentrationCellProvider, concentrationDownloadHelper);
-        concentrationGame.concentrationCellQueue  = queueOfSize(ConcentrationGame.GRID_SIZE);
-
+        concentrationGame.concentrationCellQueue  = newQueueWith(ConcentrationGame.GRID_SIZE);
         concentrationGame.init(host,  TAGS);
 
         verifyZeroInteractions(concentrationCellProvider);
         verify(concentrationDownloadHelper).downloadImages(any(ConcentrationCellReceiver.class), ArgumentMatchers.<ConcentrationCell>anyList());
     }
 
-    @NonNull
-    private ArrayDeque<ConcentrationCell> queueOfSize(int size) {
-        ArrayDeque<ConcentrationCell> cells = new ArrayDeque<>();
-        for (int i = 0; i<size; i++){
+    @Test
+    public void shouldDownloadImagesAfterLoadingConcentrationCellQueue(){
+        concentrationGame.loadConcentrationCellQueue(newQueueWith(20));
+
+        verify(concentrationDownloadHelper).downloadImages(any(ConcentrationCellReceiver.class), ArgumentMatchers.<ConcentrationCell>anyList());
+    }
+
+    @Test
+    public void shouldLoadGameCellsOnHostAfterPreparation(){
+        concentrationGame.init(host,  TAGS);
+        concentrationGame.loadGameCellsOnUiThread(gameCellsWith(8));
+
+        assertGameCellsHaveBeenPrepared(concentrationGame.getGameCells());
+
+        verify(host).displayConcentrationCells();
+    }
+
+    @Test
+    public void shouldPrepareGameCells(){
+        concentrationGame.init(host,  TAGS);
+        List<ConcentrationCell> gameCells = gameCellsWith(8);
+        concentrationGame.prepareGameCells(gameCells);
+
+        assertGameCellsHaveBeenPrepared(gameCells);
+    }
+
+    private void assertGameCellsHaveBeenPrepared(List<ConcentrationCell> gameCells) {
+        assertDuplicatesWereAdded(gameCells.size());
+        assertGameCellsWereShuffled(gameCells);
+    }
+
+    private void assertDuplicatesWereAdded(int size) {
+        assertEquals(ConcentrationGame.GRID_SIZE, size);
+    }
+
+    private void assertGameCellsWereShuffled(List<ConcentrationCell> gameCells) {
+        boolean shuffled = false;
+        for(int i=0; i<gameCells.size(); i++){
+            ConcentrationCell cell = gameCells.get(i);
+
+            int halfGridSize = ConcentrationGame.GRID_SIZE / 2;
+            if(i< halfGridSize){
+                if(Integer.parseInt(cell.getId()) != i){
+                    shuffled = true;
+                }
+            }
+            else{
+                if(Integer.parseInt(cell.getId()) != i - halfGridSize){
+                    shuffled = true;
+                }
+            }
+
+        }
+        assertEquals(true, shuffled);
+    }
+
+    //Dummy Data generators for testing
+
+    private Queue<ConcentrationCell> newQueueWith(int size) {
+        Queue<ConcentrationCell> queue = new ArrayDeque<>();
+        for (int i=0; i< size; i++){
             ConcentrationCell cell = new ConcentrationCell();
             cell.setId(String.valueOf(i));
-            cells.add(cell);
+            queue.add(cell);
         }
-        return cells;
+        return queue;
     }
+
+    private List<ConcentrationCell> gameCellsWith(int size){
+        Queue<ConcentrationCell> concentrationCellQueue = newQueueWith(size);
+        List<ConcentrationCell> concentrationCells = new ArrayList<>();
+        while(!concentrationCellQueue.isEmpty()){
+            concentrationCells.add(concentrationCellQueue.poll());
+        }
+        return concentrationCells;
+    }
+
 
 
 }

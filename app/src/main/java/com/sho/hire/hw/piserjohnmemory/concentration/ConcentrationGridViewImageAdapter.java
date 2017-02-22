@@ -7,6 +7,7 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 
+import com.sho.hire.hw.piserjohnmemory.helpers.DeviceHelper;
 import com.sho.hire.hw.piserjohnmemory.helpers.LogHelper;
 
 import java.util.List;
@@ -20,11 +21,13 @@ public class ConcentrationGridViewImageAdapter extends BaseAdapter{
     private Context context;
     private List<ConcentrationCell> concentrationCells;
     private LogHelper logHelper;
+    private DeviceHelper deviceHelper;
 
-    public ConcentrationGridViewImageAdapter(Context context, List<ConcentrationCell> concentrationCells, LogHelper logHelper) {
+    public ConcentrationGridViewImageAdapter(Context context, List<ConcentrationCell> concentrationCells, LogHelper logHelper, DeviceHelper deviceHelper) {
         this.context = context;
         this.concentrationCells = concentrationCells;
         this.logHelper = logHelper;
+        this.deviceHelper = deviceHelper;
     }
 
     @Override
@@ -47,7 +50,14 @@ public class ConcentrationGridViewImageAdapter extends BaseAdapter{
         ImageView imageView;
         if (convertView == null) {
             imageView = new ImageView(context);
-            imageView.setLayoutParams(new GridView.LayoutParams(150, 150));
+
+            int useableWidthInDp = deviceHelper.useableWidthInDp(context);
+            int cellWidth = (useableWidthInDp / 4) - 15;
+
+            imageView.setLayoutParams(new GridView.LayoutParams(
+                    Math.round(deviceHelper.convertDpToPx(context,cellWidth)),
+                    Math.round(deviceHelper.convertDpToPx(context,cellWidth))));
+
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             imageView.setPadding(0, 0, 0, 0);
         } else {

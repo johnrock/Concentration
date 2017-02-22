@@ -15,6 +15,7 @@ import com.sho.hire.hw.piserjohnmemory.concentration.ConcentrationCell;
 import com.sho.hire.hw.piserjohnmemory.concentration.ConcentrationGame;
 import com.sho.hire.hw.piserjohnmemory.concentration.ConcentrationGridViewImageAdapter;
 import com.sho.hire.hw.piserjohnmemory.flickr.FlickrHelper;
+import com.sho.hire.hw.piserjohnmemory.helpers.DeviceHelper;
 import com.sho.hire.hw.piserjohnmemory.helpers.LogHelper;
 
 import javax.inject.Inject;
@@ -27,6 +28,7 @@ public class MainActivity extends AppCompatActivity implements ConcentrationGame
     @Inject FlickrHelper flickrHelper;
     @Inject LogHelper logHelper;
     @Inject ConcentrationGame concentrationGame;
+    @Inject DeviceHelper deviceHelper;
 
     GridView gridView;
     TextView attemptsValueTextView;
@@ -86,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements ConcentrationGame
     @Override
     public void displayConcentrationCells() {
         if(concentrationGame.getGameCells() != null && !concentrationGame.getGameCells().isEmpty()){
-            ConcentrationGridViewImageAdapter gridViewImageAdapter = new ConcentrationGridViewImageAdapter(this, concentrationGame.getGameCells(), logHelper);
+            ConcentrationGridViewImageAdapter gridViewImageAdapter = new ConcentrationGridViewImageAdapter(this, concentrationGame.getGameCells(), logHelper, deviceHelper);
             gridView.setAdapter(gridViewImageAdapter);
             attemptsValueTextView.setText(String.valueOf(concentrationGame.getAttemptsValue()));
             toggleLoading(false, false);

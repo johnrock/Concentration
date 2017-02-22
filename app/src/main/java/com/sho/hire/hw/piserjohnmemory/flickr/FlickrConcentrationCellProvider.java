@@ -27,8 +27,9 @@ public class FlickrConcentrationCellProvider implements ConcentrationCellProvide
     private static final String DOMAIN = ".staticflickr.com/";
     private static final String SLASH = "/";
 
+    //package access for testability
     FlickrHelper flickrHelper;
-    private ConcentrationCellReceiver concentrationCellReceiver;
+    ConcentrationCellReceiver concentrationCellReceiver;
 
     @Inject
     public FlickrConcentrationCellProvider(FlickrHelper flickrHelper) {

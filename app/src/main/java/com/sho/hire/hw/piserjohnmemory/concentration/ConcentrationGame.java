@@ -27,13 +27,15 @@ public class ConcentrationGame implements ConcentrationCellReceiver{
     public static final int MISMATCH_TIMEOUT = 1000;
     public static  final int DEFAULT_GRID_ICON = R.drawable.cat_icon;
     public static final int BATCH_SIZE = 80;
-    private static final int GRID_SIZE = 16;
+    public static final int GRID_SIZE = 16;
 
+    //Package level access to facilitate ease of testing
     LogHelper logHelper;
     ConcentrationCellProvider concentrationCellProvider;
+    ConcentrationDownloadHelper concentrationDownloadHelper;
+    Queue<ConcentrationCell> concentrationCellQueue; //Inventory of cells pre loaded from a ConcentrationCellProvider
 
     private String[] theme;
-    private Queue<ConcentrationCell> concentrationCellQueue; //Inventory of cells pre loaded from a ConcentrationCellProvider
     private List<ConcentrationCell> gameCells;          //Cells in the current game
     private int currentPage;
     private Host host;
@@ -41,9 +43,10 @@ public class ConcentrationGame implements ConcentrationCellReceiver{
     private int attemptsValue;
 
     @Inject
-    public ConcentrationGame(LogHelper logHelper, ConcentrationCellProvider concentrationCellProvider) {
+    public ConcentrationGame(LogHelper logHelper, ConcentrationCellProvider concentrationCellProvider, ConcentrationDownloadHelper concentrationDownloadHelper) {
         this.logHelper = logHelper;
         this.concentrationCellProvider = concentrationCellProvider;
+        this.concentrationDownloadHelper = concentrationDownloadHelper;
         currentPage = 1;
     }
     public List<ConcentrationCell> getGameCells() {
@@ -65,7 +68,8 @@ public class ConcentrationGame implements ConcentrationCellReceiver{
         this.attemptsValue = 0;
 
         if(concentrationCellQueue != null && concentrationCellQueue.size() >= GRID_SIZE/2){
-            loadBitmaps(fetchNextCells());
+            //download the next set of images
+            concentrationDownloadHelper.downloadImages(this, fetchNextCells());
         }
         else{
             //Only make the call to get more cells if the current batch has been extinguished
@@ -81,11 +85,12 @@ public class ConcentrationGame implements ConcentrationCellReceiver{
     @Override
     public void loadConcentrationCellQueue(Queue<ConcentrationCell> concentrationCellQueue) {
         this.concentrationCellQueue = concentrationCellQueue;
-        loadBitmaps(fetchNextCells());
+        //Once the next batch of cells has loaded: dowload the next set of images
+        concentrationDownloadHelper.downloadImages(this, fetchNextCells());
     }
 
     /**
-     * Callback to load a new game on the host
+     * Callback to load a new game on the host after images have been downloaded
      */
     @Override
     public void loadGameCellsOnUiThread(List<ConcentrationCell> gameCells) {
@@ -131,16 +136,6 @@ public class ConcentrationGame implements ConcentrationCellReceiver{
         }
     }
 
-    /**
-     * Download the images. Must be called each time a new batch of images is returned
-     * @param gameCells
-     */
-    private void loadBitmaps(List<ConcentrationCell> gameCells) {
-        if(gameCells != null && !gameCells.isEmpty()){
-            new ConcentrationImageDownloadTask(this, logHelper,gameCells).execute();
-        }
-    }
-
     private List<ConcentrationCell> fetchNextCells() {
         List<ConcentrationCell> results = new ArrayList<>();
 
@@ -182,5 +177,21 @@ public class ConcentrationGame implements ConcentrationCellReceiver{
             }
         }
         return solvedCount == gameCells.size();
+    }
+
+    public int getTapCount() {
+        return tapCount;
+    }
+
+    public int getCurrentPage() {
+        return currentPage;
+    }
+
+    public String[] getTheme() {
+        return theme;
+    }
+
+    public Host getHost() {
+        return host;
     }
 }

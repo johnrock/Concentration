@@ -24,6 +24,7 @@
         android:layout_alignParentLeft="true"
         android:textColor="@color/colorPrimaryDark"
         android:textStyle="bold"
+        android:visibility="gone"
         />
 
     <TextView
@@ -61,7 +62,6 @@
         android:id="@+id/gridview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-
         android:numColumns="4"
         android:verticalSpacing="@dimen/gridcellspacingvertical"
         android:horizontalSpacing="@dimen/gridcellspacing"

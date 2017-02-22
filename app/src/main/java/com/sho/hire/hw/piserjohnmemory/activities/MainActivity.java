@@ -119,7 +119,8 @@ public class MainActivity extends AppCompatActivity implements ConcentrationGame
         }
     }
 
-    private void toggleLoading(boolean loading, boolean newGame) {
+    //protected access for testability
+    protected void toggleLoading(boolean loading, boolean newGame) {
         if(loading){
             progressBar.setVisibility(View.VISIBLE);
             buttonNewGame.setVisibility(View.GONE);

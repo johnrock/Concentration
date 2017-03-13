@@ -51,6 +51,8 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     compile 'com.android.support:appcompat-v7:23.4.0'
+    compile 'com.android.support:recyclerview-v7:23.4.0'
+
     compile 'com.google.dagger:dagger:' + project.DAGGER_VERSION
     annotationProcessor 'com.google.dagger:dagger-compiler:' + project.DAGGER_VERSION
 

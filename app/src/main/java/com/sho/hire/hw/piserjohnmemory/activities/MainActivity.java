@@ -2,25 +2,27 @@ package com.sho.hire.hw.piserjohnmemory.activities;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.GridView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.sho.hire.hw.piserjohnmemory.R;
+import com.sho.hire.hw.piserjohnmemory.adapters.MainActivityRecyclerViewAdapter;
 import com.sho.hire.hw.piserjohnmemory.application.ConcentrationApplication;
 import com.sho.hire.hw.piserjohnmemory.concentration.ConcentrationCell;
 import com.sho.hire.hw.piserjohnmemory.concentration.ConcentrationGame;
-import com.sho.hire.hw.piserjohnmemory.concentration.ConcentrationGridViewImageAdapter;
 import com.sho.hire.hw.piserjohnmemory.flickr.FlickrHelper;
 import com.sho.hire.hw.piserjohnmemory.helpers.DeviceHelper;
 import com.sho.hire.hw.piserjohnmemory.helpers.LogHelper;
 
+import java.util.List;
+
 import javax.inject.Inject;
 
-public class MainActivity extends AppCompatActivity implements ConcentrationGame.Host {
+public class MainActivity extends AppCompatActivity implements ConcentrationGame.Host, MainActivityRecyclerViewAdapter.ConcentrationGameTapper {
 
     public static final String THEME_KITTEN = "kitten";
 
@@ -30,7 +32,7 @@ public class MainActivity extends AppCompatActivity implements ConcentrationGame
     @Inject ConcentrationGame concentrationGame;
     @Inject DeviceHelper deviceHelper;
 
-    GridView gridView;
+   // GridView gridView;
     TextView attemptsValueTextView;
     TextView attemptsLabelTextView;
     TextView gamesolvedTextView;
@@ -38,13 +40,22 @@ public class MainActivity extends AppCompatActivity implements ConcentrationGame
     ProgressBar progressBar;
     Button buttonNewGame;
 
+    RecyclerView recyclerView;
+    GridLayoutManager gridLayoutManager;
+    MainActivityRecyclerViewAdapter mainActivityRecyclerViewAdapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //Setup RecyclerView
+        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        gridLayoutManager = new GridLayoutManager(this, 4);
+        recyclerView.setLayoutManager(gridLayoutManager);
+
         //In a production app Butterknife library would be used for all view binding.
-        gridView = (GridView) findViewById(R.id.gridview);
+        //gridView = (GridView) findViewById(R.id.gridview);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         buttonNewGame = (Button) findViewById(R.id.buttonNewGame);
         attemptsValueTextView = (TextView) findViewById(R.id.attemptsValue);
@@ -55,12 +66,12 @@ public class MainActivity extends AppCompatActivity implements ConcentrationGame
         //Dagger dependency injection
         ((ConcentrationApplication)getApplication()).getAppComponent().inject(this);
 
-        initGridView();
+       // initGridView();
 
         startGame(null);
     }
 
-    private void initGridView() {
+    /*private void initGridView() {
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -77,7 +88,7 @@ public class MainActivity extends AppCompatActivity implements ConcentrationGame
                 }
             }
         });
-    }
+    }*/
 
     public void startGame(View view) {
 
@@ -87,9 +98,14 @@ public class MainActivity extends AppCompatActivity implements ConcentrationGame
 
     @Override
     public void displayConcentrationCells() {
-        if(concentrationGame.getGameCells() != null && !concentrationGame.getGameCells().isEmpty()){
-            ConcentrationGridViewImageAdapter gridViewImageAdapter = new ConcentrationGridViewImageAdapter(this, concentrationGame.getGameCells(), logHelper, deviceHelper);
-            gridView.setAdapter(gridViewImageAdapter);
+        List<ConcentrationCell> gameCells = concentrationGame.getGameCells();
+        if(gameCells != null && !gameCells.isEmpty()){
+            //ConcentrationGridViewImageAdapter gridViewImageAdapter = new ConcentrationGridViewImageAdapter(this, gameCells, logHelper, deviceHelper);
+            //gridView.setAdapter(gridViewImageAdapter);
+
+            mainActivityRecyclerViewAdapter = new MainActivityRecyclerViewAdapter(gameCells, this);
+            recyclerView.setAdapter(mainActivityRecyclerViewAdapter);
+
             attemptsValueTextView.setText(String.valueOf(concentrationGame.getAttemptsValue()));
             toggleLoading(false, false);
         }
@@ -108,7 +124,8 @@ public class MainActivity extends AppCompatActivity implements ConcentrationGame
 
     private void pauseGameIfTappedCellsDoNotMatch() {
         if(concentrationGame.containsMisMatchedCells()){
-            gridView.postDelayed(new Runnable() {
+            //gridView.postDelayed(new Runnable() {
+            recyclerView.postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     concentrationGame.resetMisMatchedCells();
@@ -124,7 +141,8 @@ public class MainActivity extends AppCompatActivity implements ConcentrationGame
         if(loading){
             progressBar.setVisibility(View.VISIBLE);
             buttonNewGame.setVisibility(View.GONE);
-            gridView.setVisibility(View.INVISIBLE);
+            //gridView.setVisibility(View.INVISIBLE);
+            recyclerView.setVisibility(View.INVISIBLE);
             attemptsValueTextView.setVisibility(View.INVISIBLE);
             attemptsLabelTextView.setVisibility(View.INVISIBLE);
             gamesolvedTextView.setVisibility(View.INVISIBLE);
@@ -133,7 +151,8 @@ public class MainActivity extends AppCompatActivity implements ConcentrationGame
         else{
             progressBar.setVisibility(View.GONE);
             buttonNewGame.setVisibility(View.VISIBLE);
-            gridView.setVisibility(View.VISIBLE);
+            //gridView.setVisibility(View.VISIBLE);
+            recyclerView.setVisibility(View.VISIBLE);
 
         }
         if(!newGame && concentrationGame.isSolved()){
@@ -147,11 +166,22 @@ public class MainActivity extends AppCompatActivity implements ConcentrationGame
 
         progressBar.setVisibility(View.GONE);
         buttonNewGame.setVisibility(View.VISIBLE);
-        gridView.setVisibility(View.INVISIBLE);
+        //gridView.setVisibility(View.INVISIBLE);
+        recyclerView.setVisibility(View.INVISIBLE);
         attemptsValueTextView.setVisibility(View.INVISIBLE);
         attemptsLabelTextView.setVisibility(View.INVISIBLE);
         gamesolvedTextView.setVisibility(View.INVISIBLE);
         connectivityMessageTextView.setVisibility(View.VISIBLE);
 
+    }
+
+    @Override
+    public void tapCell(int position) {
+        concentrationGame.tapCell(position);
+    }
+
+    @Override
+    public List<ConcentrationCell> getGameCells() {
+        return concentrationGame.getGameCells();
     }
 }

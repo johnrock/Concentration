@@ -58,7 +58,7 @@
         android:textColor="@color/colorAccent"
         />
 
-    <GridView
+   <!-- <GridView
         android:id="@+id/gridview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -68,6 +68,15 @@
         android:gravity="center"
         android:layout_marginTop="10dp"
         android:layout_below="@+id/attempts"
+        />-->
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/attempts"
+        android:gravity="center"
+        android:layout_marginTop="10dp"
         />
 
     <Button
@@ -76,7 +85,7 @@
         android:layout_height="wrap_content"
         android:padding="20dp"
         android:layout_margin="20dp"
-        android:layout_below="@+id/gridview"
+        android:layout_below="@+id/recyclerView"
         android:gravity="center"
         android:layout_centerHorizontal="true"
         android:onClick="startGame"
